@@ -1,8 +1,8 @@
 {
-  "name": "medusa-starter-default",
+  "name": "medusa-plugin-authorize-net",
   "version": "0.0.1",
   "description": "A starter for Medusa projects.",
-  "author": "Sebastian Rindom <skrindom@gmail.com>",
+  "author": "Lucas Fuoco <fuoco.appdev@gmail.com>",
   "license": "MIT",
   "keywords": [
     "sqlite",
