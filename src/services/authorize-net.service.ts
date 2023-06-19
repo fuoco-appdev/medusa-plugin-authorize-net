@@ -122,21 +122,10 @@ class AuthorizeNetService extends AbstractPaymentProcessor {
     const paymentProfilesList = [];
     paymentProfilesList.push(customerPaymentProfileType);
 
-    const customerAddress = new ApiContracts.CustomerAddressType();
-    customerAddress.setFirstName(customer.billing_address.first_name);
-    customerAddress.setLastName(customer.billing_address.last_name);
-    customerAddress.setAddress(customer.billing_address.address_1);
-    customerAddress.setCity(customer.billing_address.city);
-    customerAddress.setState(customer.billing_address.province);
-    customerAddress.setZip(customer.billing_address.postal_code);
-    customerAddress.setCountry(customer.billing_address.country);
-    customerAddress.setPhoneNumber(customer.billing_address.phone);
-
     const customerProfileType = new ApiContracts.CustomerProfileType();
-    customerProfileType.setMerchantCustomerId(customer.id);
+    customerProfileType.setMerchantCustomerId(customer?.id);
     customerProfileType.setEmail(email);
     customerProfileType.setPaymentProfiles(paymentProfilesList);
-    customerProfileType.setBillTo(customerAddress);
 
     const createRequest = new ApiContracts.CreateCustomerProfileRequest();
     createRequest.setProfile(customerProfileType);
