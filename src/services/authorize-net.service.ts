@@ -5,7 +5,9 @@ import {
   PaymentProcessorSessionResponse,
   PaymentSessionStatus,
 } from "@medusajs/medusa";
-import { ApiContracts, ApiControllers } from "authorizenet";
+
+const ApiContracts = require("authorizenet").APIContracts;
+const ApiControllers = require("authorizenet").APIControllers;
 
 export interface AuthorizeNetOptions {
   api_key: string;
@@ -17,6 +19,7 @@ class AuthorizeNetService extends AbstractPaymentProcessor {
 
   protected readonly _options: AuthorizeNetOptions;
 
+  // @ts-ignore
   private readonly _merchantAuthenticationType: ApiContracts.MerchantAuthenticationType;
 
   protected constructor(_, options) {
