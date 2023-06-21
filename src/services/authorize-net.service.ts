@@ -88,13 +88,13 @@ class AuthorizeNetService extends AbstractPaymentProcessor {
       const profile = (profileResponse?.profile as any) ?? {};
       const paymentProfiles = (profile?.paymentProfiles as object[]) ?? [];
       authorizeNetPaymentProfiles = this.updatePaymentProfileMetadata(
-        customer.billing_address_id,
+        customer?.billing_address_id,
         authorizeNetPaymentProfiles,
         paymentProfiles
       );
 
       let data = undefined;
-      if (!customer.billing_address_id) {
+      if (!customer?.billing_address_id) {
         data = paymentProfiles[0];
       } else {
         if (
@@ -214,7 +214,7 @@ class AuthorizeNetService extends AbstractPaymentProcessor {
           string
         >) ?? {};
       if (
-        customer.billing_address_id &&
+        customer?.billing_address_id &&
         !Object.keys(authorizeNetPaymentProfiles).includes(
           customer.billing_address_id
         )
@@ -298,7 +298,7 @@ class AuthorizeNetService extends AbstractPaymentProcessor {
     paymentType.setOpaqueData(opaqueData);
 
     const customerAddressType = new ApiContracts.CustomerAddressType();
-    if (customer.billing_address) {
+    if (customer?.billing_address) {
       const {
         first_name,
         last_name,
@@ -408,7 +408,7 @@ class AuthorizeNetService extends AbstractPaymentProcessor {
     const { customer } = context;
 
     const customerAddressType = new ApiContracts.CustomerAddressType();
-    if (customer.billing_address) {
+    if (customer?.billing_address) {
       const {
         first_name,
         last_name,
@@ -528,7 +528,7 @@ class AuthorizeNetService extends AbstractPaymentProcessor {
     paymentType.setOpaqueData(opaqueData);
 
     const customerAddress = new ApiContracts.CustomerAddressType();
-    if (customer.billing_address) {
+    if (customer?.billing_address) {
       const {
         first_name,
         last_name,
