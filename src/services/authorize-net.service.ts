@@ -53,7 +53,11 @@ class AuthorizeNetService extends AbstractPaymentProcessor {
         data: Record<string, unknown>;
       }
   > {
-    throw new Error("Method not implemented.");
+    console.log(context);
+    return {
+      status: PaymentSessionStatus.AUTHORIZED,
+      data: {},
+    };
   }
   public async cancelPayment(
     paymentSessionData: Record<string, unknown>
@@ -136,7 +140,27 @@ class AuthorizeNetService extends AbstractPaymentProcessor {
   public async deletePayment(
     paymentSessionData: Record<string, unknown>
   ): Promise<Record<string, unknown> | PaymentProcessorError> {
-    throw new Error("Method not implemented.");
+    try {
+      const profile =
+        (paymentSessionData?.paymentProfile as Record<string, unknown>) ?? {};
+      const customerProfileId = (profile?.customerProfileId as string) ?? "";
+      const customerPaymentProfileId =
+        (profile?.customerPaymentProfileId as string) ?? "";
+      const response = await this.deleteCustomerPaymentProfileAsync(
+        customerProfileId,
+        customerPaymentProfileId
+      );
+      return {
+        session_data: response?.getJSON(),
+        update_requests: {
+          customer_metadata: {
+            authorize_net_opaque_value: undefined,
+          },
+        },
+      };
+    } catch (error: any) {
+      throw error;
+    }
   }
   public async getPaymentStatus(
     paymentSessionData: Record<string, unknown>
@@ -218,6 +242,46 @@ class AuthorizeNetService extends AbstractPaymentProcessor {
     } catch (error: any) {
       throw error;
     }
+  }
+
+  private async deleteCustomerPaymentProfileAsync(
+    customerProfileId: string,
+    customerPaymentProfileId: string
+    //@ts-ignore
+  ): Promise<ApiContracts.DeleteCustomerPaymentProfileRequest> {
+    const deleteRequest =
+      new ApiContracts.DeleteCustomerPaymentProfileRequest();
+    deleteRequest.setMerchantAuthentication(this._merchantAuthenticationType);
+    deleteRequest.setCustomerProfileId(customerProfileId);
+    deleteRequest.setCustomerPaymentProfileId(customerPaymentProfileId);
+
+    const ctrl = new ApiControllers.DeleteCustomerPaymentProfileController(
+      deleteRequest.getJSON()
+    );
+
+    //@ts-ignore
+    return new Promise<ApiContracts.DeleteCustomerPaymentProfileRequest>(
+      (resolve, reject) => {
+        ctrl.execute(() => {
+          const apiResponse = ctrl.getResponse();
+          const response =
+            new ApiContracts.DeleteCustomerPaymentProfileResponse(apiResponse);
+
+          if (!response) {
+            reject(new Error("Null response received"));
+          }
+
+          if (
+            !response.getMessages().getResultCode() !==
+            ApiContracts.MessageTypeEnum.OK
+          ) {
+            reject(new Error(response.getMessages()));
+          }
+
+          resolve(response);
+        });
+      }
+    );
   }
 
   private async createCustomerPaymentProfileAsync(
