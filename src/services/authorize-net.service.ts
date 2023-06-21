@@ -6,8 +6,6 @@ import {
   PaymentSessionStatus,
 } from "@medusajs/medusa";
 import * as crypto from "crypto";
-import { uuid as uuidv4 } from "uuid";
-import { TextEncoder } from "util";
 
 const ApiContracts = require("authorizenet").APIContracts;
 const ApiControllers = require("authorizenet").APIControllers;
@@ -69,7 +67,7 @@ class AuthorizeNetService extends AbstractPaymentProcessor {
   ): Promise<PaymentProcessorError | PaymentProcessorSessionResponse> {
     const { customer } = context;
 
-    const opaqueValue = this.hash(uuidv4());
+    const opaqueValue = this.generateNonce();
     try {
       const customerProfileId = customer?.metadata?.authorize_net_id as string;
       let profileResponse = undefined;
@@ -202,7 +200,7 @@ class AuthorizeNetService extends AbstractPaymentProcessor {
     const customerPaymentProfileId =
       (profile.customerPaymentProfileId as string) ?? "";
     try {
-      const opaqueValue = this.hash(uuidv4());
+      const opaqueValue = this.generateNonce();
       const response = await this.updateCustomerPaymentProfileAsync(
         opaqueValue,
         customerProfileId,
@@ -602,8 +600,9 @@ class AuthorizeNetService extends AbstractPaymentProcessor {
     );
   }
 
-  private hash(value: string): string {
-    return crypto.createHash("SHA-256").update(value).digest("hex");
+  private generateNonce(): string {
+    const crypto = require("crypto");
+    return crypto.randomBytes(16).toString("base64");
   }
 
   private updatePaymentProfileMetadata(
