@@ -1,6 +1,6 @@
 {
   "name": "medusa-plugin-authorize-net",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A starter for Medusa projects.",
   "author": "Lucas Fuoco <fuoco.appdev@gmail.com>",
   "license": "MIT",
